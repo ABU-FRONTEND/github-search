@@ -12,41 +12,31 @@ lightMode.addEventListener('click', ()=>{
 mode.addEventListener('click', () => {
    body.classList.remove('active')
 })
-function AJAXuser(method, url, username) {
-   res.open(method, url + username)
-   res.send()
-   res.addEventListener('load', () => {
-      if (res.status === 200) {
-         req = JSON.parse(res.response)
-         parentElement.style.display = 'flex'
-         searchInp.nextElementSibling.innerHTML = ''
-         userInfo(req)
-         console.log(req);
-      }
-      else if (res.status === 404) {
-         searchInp.nextElementSibling.innerHTML = 'No Result'
-         parentElement.style.display = 'none'
-      }
-   })
-}
 let btn = document.querySelector('button')
 btn.addEventListener('click', ()=>{
-   AJAXuser('GET', 'https://api.github.com/users/', searchInp.value)
+   // AJAXuser('GET', 'https://api.github.com/users/', searchInp.value)
+   fetch('https://api.github.com/users/' + searchInp.value)
+   .then(data => data.json())
+   .then((data)=>{
+      console.log(data);
+      userInfo(data)
+      parentElement.style.display = 'flex'
+   })
 })
 function userInfo(userObject) {
    parentElement.innerHTML = `
             <div class="user_info">
             <div class="user_image">
-               <img src="${userObject.avatar_url}" alt="user_image">
+               <img src="${userObject.avatar_url === undefined ? 'https://w7.pngwing.com/pngs/972/583/png-transparent-closed-disabled-forbidden-not-available-arrows-elements-outline-icon.png' : userObject.avatar_url}" alt="user_image">
             </div>
             <div class="user">
                <div class="user_createDate_name">
                   <div class="username color">
-                     <h3>${userObject.name}</h3>
-                     <a href="${userObject.html_url}">@${userObject.login}</a>
+                     <h3>${userObject.name === undefined ? 'Not Availble' : userObject.name}</h3>
+                     <a href="${userObject.html_url}">@${userObject.login === undefined ? 'Not Availble' : userObject.login}</a>
                   </div>
                   <div class="createdDate color">
-                     ${userObject.created_at}
+                     ${userObject.created_at === undefined ? 'Not availble' : userObject.created_at}
                   </div>
                </div>
             </div>
@@ -58,15 +48,15 @@ function userInfo(userObject) {
             <div class="status">
                <div class="repository">
                   <p class="name color">Repos</p>
-                  <p class="result color">${userObject.public_repos}</p>
+                  <p class="result color">${userObject.public_repos === undefined ? '0' : userObject.public_repos}</p>
                </div>
                <div class="followers">
                   <p class="name color">Followers</p>
-                  <p class="result color">${userObject.followers}</p>
+                  <p class="result color">${userObject.followers === undefined ? '0' : userObject.followers}</p>
                </div>
                <div class="following">
                   <p class="name color">Following</p>
-                  <p class="result color">${userObject.following}</p>
+                  <p class="result color">${userObject.following === undefined ? '0' : userObject.following}</p>
                </div>
             </div>
             <div class="user_credentials">
@@ -103,7 +93,7 @@ function userInfo(userObject) {
                             />
                      </g>
                   </svg>
-                  <p class="color">${userObject.blog === '' ? 'Not Available' : userObject.blog}</p>
+                  <p class="color">${userObject.blog === '' || userObject.blog === undefined  ? 'Not Available' : userObject.blog}</p>
                </div>
                <div class="user_working_locat">
                   <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
